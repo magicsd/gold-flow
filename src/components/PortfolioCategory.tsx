@@ -7,16 +7,27 @@ const PortfolioCategory: React.FC<{
   depth: number
   index: number
   parentId: string | null
+  totalSiblings: number
   renameCategory: (id: string, newName: string) => void
   moveCategory: (parentId: string | null, categoryId: string, direction: 'up' | 'down') => void
   deleteCategory: (id: string) => void
   updatePortfolio: () => void
-}> = ({ category, depth, index, parentId, renameCategory, moveCategory, deleteCategory, updatePortfolio }) => {
+}> = ({
+  category,
+  depth,
+  index,
+  parentId,
+  totalSiblings,
+  renameCategory,
+  moveCategory,
+  deleteCategory,
+  updatePortfolio,
+}) => {
   const [isEditing, setIsEditing] = useState(false)
   const [newName, setNewName] = useState(category.name)
   const [isExpanded, setIsExpanded] = useState(true) // Контроль отображения вложенных категорий
 
-  // Вызываем перерасчет при каждом изменении структуры
+  // Пересчет портфеля при изменении вложенных элементов
   useEffect(() => {
     updatePortfolio()
   }, [category.children.length]) // Следим за изменениями в подкатегориях
@@ -47,7 +58,7 @@ const PortfolioCategory: React.FC<{
           {isEditing ? (
             <input
               type="text"
-              className="bg-gray-700 text-white p-1 rounded w-[180px] text-sm"
+              className="bg-gray-700 text-white px-1 rounded w-[180px] text-sm"
               value={newName}
               onChange={(e) => setNewName(e.target.value)}
               onBlur={handleRename}
@@ -67,17 +78,20 @@ const PortfolioCategory: React.FC<{
 
         {/* Кнопки управления (показываются только при ховере строки) */}
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition duration-200">
+          {/* Кнопка "вверх" - скрывается, если категория уже первая */}
           <button
-            className="p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs"
+            className="p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs disabled:opacity-30 disabled:cursor-not-allowed"
             onClick={() => moveCategory(parentId, category.id, 'up')}
             disabled={index === 0}
           >
             <FaChevronUp />
           </button>
 
+          {/* Кнопка "вниз" - скрывается, если категория уже последняя */}
           <button
-            className="p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs"
+            className="p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs disabled:opacity-30 disabled:cursor-not-allowed"
             onClick={() => moveCategory(parentId, category.id, 'down')}
+            disabled={index === totalSiblings - 1}
           >
             <FaChevronDown />
           </button>
@@ -106,6 +120,7 @@ const PortfolioCategory: React.FC<{
               category={child}
               depth={depth + 1}
               index={childIndex}
+              totalSiblings={category.children.length}
               parentId={category.id}
               renameCategory={renameCategory}
               moveCategory={moveCategory}
