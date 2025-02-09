@@ -50,8 +50,8 @@ const PortfolioEditor: React.FC<Props> = ({ portfolio, setPortfolio }) => {
 
   const distributeInvestment = () => {
     const total = investmentAmount
-    let weights = portfolio.map((_, index) => Math.pow(GOLDEN_RATIO, -index))
-    let totalWeight = weights.reduce((a, b) => a + b, 0)
+    const weights = portfolio.map((_, index) => Math.pow(GOLDEN_RATIO, -index))
+    const totalWeight = weights.reduce((a, b) => a + b, 0)
 
     const updatedPortfolio = portfolio.map((category, index) =>
       distributeInvestmentRecursive(category, total * (weights[index] / totalWeight), 100)
@@ -69,8 +69,8 @@ const PortfolioEditor: React.FC<Props> = ({ portfolio, setPortfolio }) => {
       return { ...category, amount, percentage }
     }
 
-    let weights = category.children.map((_, index) => Math.pow(GOLDEN_RATIO, -index))
-    let totalWeight = weights.reduce((a, b) => a + b, 0)
+    const weights = category.children.map((_, index) => Math.pow(GOLDEN_RATIO, -index))
+    const totalWeight = weights.reduce((a, b) => a + b, 0)
 
     const updatedChildren = category.children.map((child, index) => {
       const childAmount = amount * (weights[index] / totalWeight)
@@ -110,14 +110,7 @@ const PortfolioEditor: React.FC<Props> = ({ portfolio, setPortfolio }) => {
       </div>
 
       <div className="mb-4">
-        <input
-          type="text"
-          className="p-2 rounded w-full bg-gray-700"
-          placeholder="Название новой категории"
-          value={newCategoryName}
-          onChange={(e) => setNewCategoryName(e.target.value)}
-        />
-        <select className="mt-2 p-2 rounded w-full bg-gray-700" onChange={(e) => setSelectedParentId(e.target.value)}>
+        <select className="p-2 rounded w-full bg-gray-700" onChange={(e) => setSelectedParentId(e.target.value)}>
           <option value="">Выбрать родительскую категорию</option>
           {getAllCategories(portfolio).map((category) => (
             <option key={category.id} value={category.id}>
@@ -125,7 +118,19 @@ const PortfolioEditor: React.FC<Props> = ({ portfolio, setPortfolio }) => {
             </option>
           ))}
         </select>
-        <button onClick={addCategory} className="mt-2 p-2 bg-green-500 rounded w-full">
+        <input
+          type="text"
+          className="p-2 mt-2 rounded w-full bg-gray-700 disabled:text-gray-400"
+          placeholder="Название новой категории"
+          value={newCategoryName}
+          disabled={!selectedParentId}
+          onChange={(e) => setNewCategoryName(e.target.value)}
+        />
+        <button
+          disabled={!selectedParentId || newCategoryName.trim().length === 0}
+          onClick={addCategory}
+          className="mt-2 p-2 bg-green-500 rounded w-full"
+        >
           Добавить категорию
         </button>
       </div>

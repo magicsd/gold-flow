@@ -6,8 +6,8 @@ import PortfolioStorage from './PortfolioStorage.tsx'
 
 const App: React.FC = () => {
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([
-      { id: '2', name: 'Преумножение', amount: 0, children: [] },
-      { id: '1', name: 'Сохранение', amount: 0, children: [] },
+    { id: '2', name: 'Преумножение', amount: 0, children: [] },
+    { id: '1', name: 'Сохранение', amount: 0, children: [] },
   ])
 
   return (
