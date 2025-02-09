@@ -2,6 +2,7 @@ import { useState } from 'react'
 import PortfolioEditor from './PortfolioEditor'
 import PortfolioView from './PortfolioView'
 import { PortfolioItem } from './types'
+import PortfolioStorage from './PortfolioStorage.tsx'
 
 const App: React.FC = () => {
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([
@@ -16,6 +17,7 @@ const App: React.FC = () => {
         <PortfolioEditor portfolio={portfolio} setPortfolio={setPortfolio} />
         <PortfolioView portfolio={portfolio} />
       </div>
+      <PortfolioStorage portfolio={portfolio} setPortfolio={setPortfolio} />
     </div>
   )
 }

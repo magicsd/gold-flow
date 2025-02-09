@@ -6,7 +6,7 @@ type Props = {
   setPortfolio: React.Dispatch<React.SetStateAction<PortfolioItem[]>>
 }
 
-const GOLDEN_RATIO = 1.618 // Корректное золотое сечение
+const GOLDEN_RATIO = 1.618
 
 const PortfolioEditor: React.FC<Props> = ({ portfolio, setPortfolio }) => {
   const [investmentAmount, setInvestmentAmount] = useState<number>(0)
