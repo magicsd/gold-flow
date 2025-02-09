@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { PortfolioItem } from '../types'
+import type { PortfolioItem } from '../types'
 import { FaChevronUp, FaChevronDown, FaEdit, FaTrash } from 'react-icons/fa'
+import { clsx } from 'clsx'
 
 const PortfolioCategory: React.FC<{
   category: PortfolioItem
@@ -31,11 +32,18 @@ const PortfolioCategory: React.FC<{
   const isLast = parent ? index === parent.children.length - 1 : false
 
   return (
-    <div className="relative flex flex-col">
+    <div
+      className={clsx('relative flex flex-col p-1 rounded', { 'hover:bg-blue-500/10': category.children.length > 0 })}
+    >
       {/* Линия вложенности */}
       {depth > 0 && <div className="absolute left-[-8px] top-0 bottom-0 w-[2px] bg-blue-500"></div>}
 
-      <div className="flex items-center space-x-2 py-1 px-2 hover:bg-gray-700 rounded-md transition duration-200 group">
+      <div
+        className={clsx(
+          'flex items-center space-x-2 py-1 px-2 hover:bg-gray-700 rounded-md transition duration-200 group',
+          { 'bg-gray-700': isEditing }
+        )}
+      >
         {/* Кнопка раскрытия вложенных категорий */}
         {category.children.length > 0 && (
           <button
@@ -60,7 +68,7 @@ const PortfolioCategory: React.FC<{
             />
           ) : (
             <p
-              className="font-semibold cursor-pointer hover:text-yellow-400 text-sm"
+              className="font-semibold cursor-pointer hover:text-yellow-400 transition-colors text-sm"
               onDoubleClick={() => setIsEditing(true)}
             >
               {category.name} -<span className="text-green-400"> ${category.amount.toFixed(2)}</span>
@@ -70,38 +78,40 @@ const PortfolioCategory: React.FC<{
         </div>
 
         {/* Кнопки управления (показываются только при ховере строки) */}
-        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition duration-200">
-          {/* Кнопка "вверх" - скрывается, если категория уже первая */}
-          <button
-            className="p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs disabled:opacity-30 disabled:cursor-not-allowed"
-            onClick={() => moveCategory(parent?.id || null, category.id, 'up')}
-            disabled={isFirst}
-          >
-            <FaChevronUp />
-          </button>
+        {!isEditing && (
+          <div className="flex gap-1 has-[:focus]:opacity-100 opacity-0 group-hover:opacity-100 transition duration-200">
+            {/* Кнопка "вверх" - скрывается, если категория уже первая */}
+            <button
+              className="p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs disabled:opacity-30 disabled:cursor-not-allowed"
+              onClick={() => moveCategory(parent?.id || null, category.id, 'up')}
+              disabled={isFirst}
+            >
+              <FaChevronUp />
+            </button>
 
-          {/* Кнопка "вниз" - скрывается, если категория уже последняя */}
-          <button
-            className="p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs disabled:opacity-30 disabled:cursor-not-allowed"
-            onClick={() => moveCategory(parent?.id || null, category.id, 'down')}
-            disabled={isLast}
-          >
-            <FaChevronDown />
-          </button>
+            {/* Кнопка "вниз" - скрывается, если категория уже последняя */}
+            <button
+              className="p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs disabled:opacity-30 disabled:cursor-not-allowed"
+              onClick={() => moveCategory(parent?.id || null, category.id, 'down')}
+              disabled={isLast}
+            >
+              <FaChevronDown />
+            </button>
 
-          {/* Кнопка редактирования */}
-          <button className="p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs" onClick={() => setIsEditing(true)}>
-            <FaEdit />
-          </button>
+            {/* Кнопка редактирования */}
+            <button className="p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs" onClick={() => setIsEditing(true)}>
+              <FaEdit />
+            </button>
 
-          {/* Кнопка удаления */}
-          <button
-            className="p-1 bg-red-600 hover:bg-red-500 rounded text-xs"
-            onClick={() => deleteCategory(category.id)}
-          >
-            <FaTrash />
-          </button>
-        </div>
+            {/* Кнопка удаления */}
+            <button
+              className="p-1 bg-red-600 hover:bg-red-500 rounded text-xs"
+              onClick={() => deleteCategory(category.id)}
+            >
+              <FaTrash />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Вложенные категории (скрываются по нажатию) */}
