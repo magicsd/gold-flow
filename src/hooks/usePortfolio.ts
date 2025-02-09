@@ -11,7 +11,16 @@ export const usePortfolio = () => {
 
   const updatePortfolio = () => {
     setPortfolio((prevPortfolio) => {
-      return prevPortfolio.map((category) => distributeInvestmentRecursive(category, investmentAmount, 100))
+      let weights = prevPortfolio.map((_, i) => Math.pow(GOLDEN_RATIO, -i))
+      let totalWeight = weights.reduce((a, b) => a + b, 0)
+
+      return prevPortfolio.map((category, i) =>
+        distributeInvestmentRecursive(
+          category,
+          investmentAmount * (weights[i] / totalWeight),
+          (weights[i] / totalWeight) * 100 // 🔥 Теперь проценты считаются корректно!
+        )
+      )
     })
   }
 
@@ -124,10 +133,12 @@ export const usePortfolio = () => {
     amount: number,
     percentage: number
   ): PortfolioItem => {
-    if (category.children.length === 0) return { ...category, amount, percentage }
+    if (category.children.length === 0) {
+      return { ...category, amount, percentage }
+    }
 
-    const weights = category.children.map((_, i) => Math.pow(GOLDEN_RATIO, -i))
-    const totalWeight = weights.reduce((a, b) => a + b, 0)
+    let weights = category.children.map((_, i) => Math.pow(GOLDEN_RATIO, -i))
+    let totalWeight = weights.reduce((a, b) => a + b, 0)
 
     return {
       ...category,

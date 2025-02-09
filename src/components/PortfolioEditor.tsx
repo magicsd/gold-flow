@@ -21,7 +21,6 @@ const PortfolioEditor: React.FC<Props> = ({
   selectedParentId,
   setSelectedParentId,
   addCategory,
-  distributeInvestment,
   portfolio,
   getAllCategories,
 }) => {
@@ -36,12 +35,10 @@ const PortfolioEditor: React.FC<Props> = ({
           type="number"
           className="p-2 rounded w-full bg-gray-700 text-white"
           placeholder="Введите сумму"
-          value={investmentAmount}
+          value={investmentAmount || 1}
+          min={1}
           onChange={(e) => setInvestmentAmount(Number(e.target.value))}
         />
-        <button onClick={distributeInvestment} className="mt-2 p-2 bg-blue-500 rounded w-full">
-          Распределить по золотому сечению
-        </button>
       </div>
 
       {/* Добавление новой категории */}
