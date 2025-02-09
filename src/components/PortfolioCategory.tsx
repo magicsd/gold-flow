@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { PortfolioItem } from '../types'
 import { FaChevronUp, FaChevronDown, FaEdit, FaTrash } from 'react-icons/fa'
 
@@ -10,10 +10,16 @@ const PortfolioCategory: React.FC<{
   renameCategory: (id: string, newName: string) => void
   moveCategory: (parentId: string | null, categoryId: string, direction: 'up' | 'down') => void
   deleteCategory: (id: string) => void
-}> = ({ category, depth, index, parentId, renameCategory, moveCategory, deleteCategory }) => {
+  updatePortfolio: () => void
+}> = ({ category, depth, index, parentId, renameCategory, moveCategory, deleteCategory, updatePortfolio }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [newName, setNewName] = useState(category.name)
   const [isExpanded, setIsExpanded] = useState(true) // Контроль отображения вложенных категорий
+
+  // Вызываем перерасчет при каждом изменении структуры
+  useEffect(() => {
+    updatePortfolio()
+  }, [category.children.length]) // Следим за изменениями в подкатегориях
 
   const handleRename = () => {
     if (newName.trim()) renameCategory(category.id, newName.trim())
@@ -59,7 +65,7 @@ const PortfolioCategory: React.FC<{
           )}
         </div>
 
-        {/* Кнопки управления (теперь показываются только при ховере строки) */}
+        {/* Кнопки управления (показываются только при ховере строки) */}
         <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition duration-200">
           <button
             className="p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs"
@@ -104,6 +110,7 @@ const PortfolioCategory: React.FC<{
               renameCategory={renameCategory}
               moveCategory={moveCategory}
               deleteCategory={deleteCategory}
+              updatePortfolio={updatePortfolio} // Прокидываем пересчет дальше
             />
           ))}
         </div>

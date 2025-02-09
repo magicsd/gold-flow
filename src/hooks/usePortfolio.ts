@@ -1,13 +1,23 @@
-import { useState } from 'react'
-import { PortfolioItem } from './types'
+import { useEffect, useState } from 'react'
+import { PortfolioItem } from '../types'
 
 const GOLDEN_RATIO = 1.618 // Золотое сечение
 
 export const usePortfolio = () => {
   const [portfolio, setPortfolio] = useState<PortfolioItem[]>([])
-  const [investmentAmount, setInvestmentAmount] = useState<number>(0)
+  const [investmentAmount, setInvestmentAmount] = useState<number>(10000)
   const [selectedParentId, setSelectedParentId] = useState<string | null>(null)
   const [newCategoryName, setNewCategoryName] = useState<string>('')
+
+  const updatePortfolio = () => {
+    setPortfolio((prevPortfolio) => {
+      return prevPortfolio.map((category) => distributeInvestmentRecursive(category, investmentAmount, 100))
+    })
+  }
+
+  useEffect(() => {
+    updatePortfolio() // Пересчитываем при каждом изменении суммы инвестирования
+  }, [investmentAmount])
 
   // ✅ Добавление новой категории (включая подкатегории)
   const addCategory = () => {
@@ -172,5 +182,6 @@ export const usePortfolio = () => {
     moveCategory,
     distributeInvestment,
     getAllCategories,
+    updatePortfolio,
   }
 }

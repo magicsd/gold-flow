@@ -12,6 +12,7 @@ const App: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <PortfolioEditor {...portfolioState} />
         <PortfolioView
+          updatePortfolio={portfolioState.updatePortfolio}
           portfolio={portfolioState.portfolio}
           moveCategory={portfolioState.moveCategory}
           renameCategory={portfolioState.renameCategory}
