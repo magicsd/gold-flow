@@ -6,23 +6,12 @@ const PortfolioCategory: React.FC<{
   category: PortfolioItem
   depth: number
   index: number
-  parentId: string | null
-  totalSiblings: number
+  parent?: PortfolioItem | null
   renameCategory: (id: string, newName: string) => void
   moveCategory: (parentId: string | null, categoryId: string, direction: 'up' | 'down') => void
   deleteCategory: (id: string) => void
-  updatePortfolio: () => void
-}> = ({
-  category,
-  depth,
-  index,
-  parentId,
-  totalSiblings,
-  renameCategory,
-  moveCategory,
-  deleteCategory,
-  updatePortfolio,
-}) => {
+  updatePortfolio: VoidFunction
+}> = ({ category, depth, index, parent, renameCategory, moveCategory, deleteCategory, updatePortfolio }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [newName, setNewName] = useState(category.name)
   const [isExpanded, setIsExpanded] = useState(true) // Контроль отображения вложенных категорий
@@ -36,6 +25,10 @@ const PortfolioCategory: React.FC<{
     if (newName.trim()) renameCategory(category.id, newName.trim())
     setIsEditing(false)
   }
+
+  // Определяем, является ли текущий элемент первым или последним в родительской категории
+  const isFirst = index === 0
+  const isLast = parent ? index === parent.children.length - 1 : false
 
   return (
     <div className="relative flex flex-col">
@@ -81,8 +74,8 @@ const PortfolioCategory: React.FC<{
           {/* Кнопка "вверх" - скрывается, если категория уже первая */}
           <button
             className="p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs disabled:opacity-30 disabled:cursor-not-allowed"
-            onClick={() => moveCategory(parentId, category.id, 'up')}
-            disabled={index === 0}
+            onClick={() => moveCategory(parent?.id || null, category.id, 'up')}
+            disabled={isFirst}
           >
             <FaChevronUp />
           </button>
@@ -90,8 +83,8 @@ const PortfolioCategory: React.FC<{
           {/* Кнопка "вниз" - скрывается, если категория уже последняя */}
           <button
             className="p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs disabled:opacity-30 disabled:cursor-not-allowed"
-            onClick={() => moveCategory(parentId, category.id, 'down')}
-            disabled={index === totalSiblings - 1}
+            onClick={() => moveCategory(parent?.id || null, category.id, 'down')}
+            disabled={isLast}
           >
             <FaChevronDown />
           </button>
@@ -120,8 +113,7 @@ const PortfolioCategory: React.FC<{
               category={child}
               depth={depth + 1}
               index={childIndex}
-              totalSiblings={category.children.length}
-              parentId={category.id}
+              parent={category} // Передаем текущий элемент как родителя
               renameCategory={renameCategory}
               moveCategory={moveCategory}
               deleteCategory={deleteCategory}
