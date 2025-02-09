@@ -1,18 +1,20 @@
 import { useState } from 'react'
 import { PortfolioItem } from '../types'
-import { FaChevronUp, FaChevronDown, FaEdit } from 'react-icons/fa'
+import { FaChevronUp, FaChevronDown, FaEdit, FaTrash } from 'react-icons/fa'
 
 type Props = {
   portfolio: PortfolioItem[]
   renameCategory: (id: string, newName: string) => void
   moveCategory: (parentId: string | null, categoryId: string, direction: 'up' | 'down') => void
+  deleteCategory: (id: string) => void
 }
 
-const PortfolioView: React.FC<Props> = ({ portfolio, renameCategory, moveCategory }) => (
+const PortfolioView: React.FC<Props> = ({ portfolio, renameCategory, moveCategory, deleteCategory }) => (
   <div className="bg-gray-800 p-6 rounded-lg">
     <h2 className="text-2xl font-semibold mb-4">Структура портфеля</h2>
     {portfolio.map((category, index) => (
       <PortfolioCategory
+        deleteCategory={deleteCategory}
         key={category.id}
         category={category}
         depth={0}
@@ -32,7 +34,8 @@ const PortfolioCategory: React.FC<{
   parentId: string | null
   renameCategory: (id: string, newName: string) => void
   moveCategory: (parentId: string | null, categoryId: string, direction: 'up' | 'down') => void
-}> = ({ category, depth, index, parentId, renameCategory, moveCategory }) => {
+  deleteCategory: (id: string) => void
+}> = ({ category, depth, index, parentId, renameCategory, moveCategory, deleteCategory }) => {
   const [isEditing, setIsEditing] = useState(false)
   const [newName, setNewName] = useState(category.name)
   const [isExpanded, setIsExpanded] = useState(true) // Контроль отображения вложенных категорий
@@ -43,7 +46,7 @@ const PortfolioCategory: React.FC<{
   }
 
   return (
-    <div className="relative flex flex-col group">
+    <div className="relative flex flex-col group transition-opacity duration-300">
       {/* Линия вложенности */}
       {depth > 0 && <div className="absolute left-[-8px] top-0 bottom-0 w-[2px] bg-blue-500"></div>}
 
@@ -102,6 +105,14 @@ const PortfolioCategory: React.FC<{
           <button className="p-1 bg-gray-600 hover:bg-gray-500 rounded text-xs" onClick={() => setIsEditing(true)}>
             <FaEdit />
           </button>
+
+          {/* Кнопка удаления */}
+          <button
+            className="p-1 bg-red-600 hover:bg-red-500 rounded text-xs"
+            onClick={() => deleteCategory(category.id)}
+          >
+            <FaTrash />
+          </button>
         </div>
       </div>
 
@@ -117,6 +128,7 @@ const PortfolioCategory: React.FC<{
               parentId={category.id}
               renameCategory={renameCategory}
               moveCategory={moveCategory}
+              deleteCategory={deleteCategory}
             />
           ))}
         </div>

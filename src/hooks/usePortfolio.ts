@@ -35,7 +35,12 @@ export const usePortfolio = () => {
 
   // ✅ Редактирование названия категории
   const renameCategory = (id: string, newName: string) => {
-    setPortfolio((prev) => updateCategoryRecursive(prev, id, (category) => ({ ...category, name: newName })))
+    setPortfolio((prev) =>
+      updateCategoryRecursive(prev, id, (category) => ({
+        ...category,
+        name: newName,
+      }))
+    )
   }
 
   // ✅ Перемещение категории вверх или вниз
@@ -50,7 +55,12 @@ export const usePortfolio = () => {
     updateFn: (category: PortfolioItem) => PortfolioItem
   ): PortfolioItem[] => {
     return items.map((item) =>
-      item.id === id ? updateFn(item) : { ...item, children: updateCategoryRecursive(item.children, id, updateFn) }
+      item.id === id
+        ? updateFn(item)
+        : {
+            ...item,
+            children: updateCategoryRecursive(item.children, id, updateFn),
+          }
     )
   }
 
@@ -91,8 +101,8 @@ export const usePortfolio = () => {
   // ✅ Распределение инвестиций по золотому сечению
   const distributeInvestment = () => {
     const total = investmentAmount
-    let weights = portfolio.map((_, i) => Math.pow(GOLDEN_RATIO, -i))
-    let totalWeight = weights.reduce((a, b) => a + b, 0)
+    const weights = portfolio.map((_, i) => Math.pow(GOLDEN_RATIO, -i))
+    const totalWeight = weights.reduce((a, b) => a + b, 0)
 
     setPortfolio((prev) =>
       prev.map((category, i) => distributeInvestmentRecursive(category, total * (weights[i] / totalWeight), 100))
@@ -106,8 +116,8 @@ export const usePortfolio = () => {
   ): PortfolioItem => {
     if (category.children.length === 0) return { ...category, amount, percentage }
 
-    let weights = category.children.map((_, i) => Math.pow(GOLDEN_RATIO, -i))
-    let totalWeight = weights.reduce((a, b) => a + b, 0)
+    const weights = category.children.map((_, i) => Math.pow(GOLDEN_RATIO, -i))
+    const totalWeight = weights.reduce((a, b) => a + b, 0)
 
     return {
       ...category,
@@ -134,7 +144,21 @@ export const usePortfolio = () => {
     ])
   }
 
+  const deleteCategory = (id: string) => {
+    setPortfolio((prev) => removeCategoryRecursive(prev, id))
+  }
+
+  const removeCategoryRecursive = (items: PortfolioItem[], id: string): PortfolioItem[] => {
+    return items
+      .filter((item) => item.id !== id) // Удаляем текущую категорию
+      .map((item) => ({
+        ...item,
+        children: removeCategoryRecursive(item.children, id), // Рекурсивно удаляем из вложенных
+      }))
+  }
+
   return {
+    deleteCategory,
     portfolio,
     setPortfolio,
     investmentAmount,

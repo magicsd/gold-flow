@@ -15,6 +15,7 @@ const App: React.FC = () => {
           portfolio={portfolioState.portfolio}
           moveCategory={portfolioState.moveCategory}
           renameCategory={portfolioState.renameCategory}
+          deleteCategory={portfolioState.deleteCategory}
         />
       </div>
       <PortfolioStorage portfolio={portfolioState.portfolio} setPortfolio={portfolioState.setPortfolio} />
