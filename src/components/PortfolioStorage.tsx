@@ -1,4 +1,4 @@
-import { PortfolioItem } from './types'
+import { PortfolioItem } from '../types.ts'
 
 type Props = {
   portfolio: PortfolioItem[]
